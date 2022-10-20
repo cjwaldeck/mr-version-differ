@@ -6,7 +6,7 @@ import subprocess
 from pick import pick
 import datetime
 
-class DiffRef:
+class MrVersion:
     def __init__(self, head_sha, created_at):
         self.head_sha = head_sha
         self.created_at = datetime.datetime.strptime(created_at, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -112,7 +112,7 @@ def main():
     project, mr_versions = get_mr_details(args.token, args.url)
 
     # Prompt user to select two refs
-    diff_refs = [DiffRef(v['head_commit_sha'], v['created_at']) for v in mr_versions]
+    diff_refs = [MrVersion(v['head_commit_sha'], v['created_at']) for v in mr_versions]
     ref_a, _ = pick(diff_refs, 'Diff from (latest first):')
     diff_refs.remove(ref_a)
     ref_b, _ = pick(diff_refs, 'Diff to:')
