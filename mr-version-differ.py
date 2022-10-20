@@ -14,7 +14,7 @@ class DiffRef:
     def __repr__(self):
         return f'{self.created_at}, {self.head_sha}'
 
-GITREPO_NAME = '.mr-version-differ'
+FETCH_REPO = '.fetch_repo'
 
 def make_request(token, request):
     response = requests.get(request, headers={'PRIVATE-TOKEN': token})
@@ -86,19 +86,19 @@ def get_mr_details(token, url):
 
 def generate_diff(project, ref_a, ref_b):
     # Initialize a repo if not already exist and add remote
-    subprocess.call(['git', 'init', GITREPO_NAME])
+    subprocess.call(['git', 'init', FETCH_REPO])
 
     # Will generate error if already exists. Let it for now...
-    subprocess.call(['git', '-C', GITREPO_NAME, 'remote', 'add',
+    subprocess.call(['git', '-C', FETCH_REPO, 'remote', 'add',
                      project['name'], project['ssh_url_to_repo']])
 
     # Need to fetch refs explicitly as they are not part of any ref group
-    subprocess.call(['git', '-C', GITREPO_NAME, 'fetch',
+    subprocess.call(['git', '-C', FETCH_REPO, 'fetch',
                      project['name'], ref_a.head_sha, ref_b.head_sha])
 
     # Do not store output as it will loose color information.
     # Let it be outputted to stdout undisturbed
-    subprocess.call(['git', '-C', GITREPO_NAME, 'range-diff',
+    subprocess.call(['git', '-C', FETCH_REPO, 'range-diff',
                      f'{ref_b.head_sha}...{ref_a.head_sha}'])
 
 def main():
