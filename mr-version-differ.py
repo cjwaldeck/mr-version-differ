@@ -111,6 +111,10 @@ def main():
 
     project, mr_versions = get_mr_details(args.token, args.url)
 
+    if len(mr_versions) < 2:
+        print('Cannot diff MR with less than two versions...')
+        exit(1)
+
     # Prompt user to select two refs
     ref_a, _ = pick(mr_versions, 'Diff from (latest first):')
     mr_versions.remove(ref_a)
