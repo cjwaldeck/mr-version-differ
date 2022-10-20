@@ -80,7 +80,7 @@ def get_mr_details(token, url):
     elif not response.ok:
         exit(1)
 
-    mr_versions = response.json()
+    mr_versions = [MrVersion(v['head_commit_sha'], v['created_at']) for v in response.json()]
 
     return project, mr_versions
 
@@ -112,10 +112,9 @@ def main():
     project, mr_versions = get_mr_details(args.token, args.url)
 
     # Prompt user to select two refs
-    diff_refs = [MrVersion(v['head_commit_sha'], v['created_at']) for v in mr_versions]
-    ref_a, _ = pick(diff_refs, 'Diff from (latest first):')
-    diff_refs.remove(ref_a)
-    ref_b, _ = pick(diff_refs, 'Diff to:')
+    ref_a, _ = pick(mr_versions, 'Diff from (latest first):')
+    mr_versions.remove(ref_a)
+    ref_b, _ = pick(mr_versions, 'Diff to:')
 
     # Generate diff. It will be visible in stdout
     generate_diff(project, ref_a, ref_b)
